@@ -42,43 +42,60 @@
     </section>
 
     <script>
-        function getLocation() {
-            return new Promise((resolve, reject) => {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(function(position) {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        resolve({ lat, lon });
-                    }, function(error) {
-                        reject("Error getting location.");
-                    });
-                } else {
-                    reject("Geolocation is not supported by this browser.");
-                }
-            });
-        }
+        //function getLocation() {
+        //    return new Promise((resolve, reject) => {
+        //        if (navigator.geolocation) {
+        //            navigator.geolocation.getCurrentPosition(function(position) {
+        //                const lat = position.coords.latitude;
+        //                const lon = position.coords.longitude;
+        //                resolve({ lat, lon });
+        //            }, function(error) {
+        //                reject("Error getting location.");
+        //            });
+        //        } else {
+        //            reject("Geolocation is not supported by this browser.");
+        //        }
+        //    });
+        //}
+//
+        //function getCountryFromCoordinates(lat, lon) {
+        //    const apiKey = "AIzaSyAZchyp1HWHvwH_1xIDHvNrRtElZs8Dwbk";
+        //    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+//
+        //    return fetch(url)
+        //        .then(response => response.json())
+        //        .then(data => {
+        //            if (data.results && data.results[0]) {
+        //                for (let component of data.results[0].address_components) {
+        //                    if (component.types.includes("country")) {
+        //                        return component.long_name;
+        //                    }
+        //                }
+        //                throw new Error("Country not found");
+        //            } else {
+        //                throw new Error("No results found for coordinates");
+        //            }
+        //        });
+        //}
 
-        function getCountryFromCoordinates(lat, lon) {
-            const apiKey = "AIzaSyAZchyp1HWHvwH_1xIDHvNrRtElZs8Dwbk";
-            const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+        
 
-            return fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.results && data.results[0]) {
-                        for (let component of data.results[0].address_components) {
-                            if (component.types.includes("country")) {
-                                return component.long_name;
-                            }
-                        }
-                        throw new Error("Country not found");
-                    } else {
-                        throw new Error("No results found for coordinates");
-                    }
-                });
-        }
+        //function populateDropdown(userCountry) {
+        //    const dropdown = document.getElementById("country");
+        
+        //    
+        //    countries.forEach(country => {
+        //        const option = document.createElement("option");
+        //        option.value = country.dial_code;
+        //        option.text = `${country.name} (${country.dial_code})`;
+        //        if (userCountry == country.name) {
+        //            option.selected = true
+        //        }
+        //        dropdown.add(option);
+        //    });
+        //}
 
-        function populateDropdown(userCountry) {
+        function populateDropdown() {
             const dropdown = document.getElementById("country");
             const countries = [
                 {
@@ -1539,9 +1556,6 @@
                 const option = document.createElement("option");
                 option.value = country.dial_code;
                 option.text = `${country.name} (${country.dial_code})`;
-                if (userCountry == country.name) {
-                    option.selected = true
-                }
                 dropdown.add(option);
             });
         }
@@ -1600,20 +1614,22 @@
             });
         }
 
-        function init() {
-            getLocation()
-                .then(({ lat, lon }) => {
-                    return getCountryFromCoordinates(lat, lon);
-                })
-                .then(userCountry => {
-                    populateDropdown(userCountry);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-        }
+        //function init() {
+        //    getLocation()
+        //        .then(({ lat, lon }) => {
+        //            return getCountryFromCoordinates(lat, lon);
+        //        })
+        //        .then(userCountry => {
+        //            populateDropdown(userCountry);
+        //        })
+        //        .catch(error => {
+        //            console.error(error);
+        //        });
+        //}
 
-        window.onload = init;
+        //window.onload = init;
+
+        populateDropdown()
     </script>
 </body>
 </html>
