@@ -39,10 +39,6 @@
         </form>
 
         <div id="result"></div>
-
-        <div>
-            <a href="https://www.flaticon.com/free-icons/speech-bubble" title="speech-bubble icons" class="text-xs">Speech-bubble icons created by Kiranshastry - Flaticon</a>
-        </div>
     </section>
 
     <script>
@@ -69,6 +65,7 @@
                 })
                 .catch(error => {
                     console.error("Error fetching country list: ", error);
+                    alert("Error fetching country list: " + error);
                     return []; // Return an empty array on failure
                 });
         }
