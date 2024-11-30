@@ -79,12 +79,9 @@
         }
 
         function fetchCountryList() {
-            return fetch('https://raw.githubusercontent.com/Haqimzuhari/nosavewhatsapp/refs/heads/master/countries.json')
+            return fetch("https://raw.githubusercontent.com/Haqimzuhari/nosavewhatsapp/refs/heads/master/countries.json")
                 .then(response => response.json())
-                .then(data => {
-                    return data;
-                    throw new Error("Unable to fetch countries list");
-                })
+                .then(data => data);
         }
 
         function populateDropdown(countries, userCountry) {
@@ -159,11 +156,11 @@
         function init() {
             getLocation()
                 .then(({ lat, lon }) => {
-                    return getCountryFromCoordinates(lat, lon); // Fetch the country
+                    return getCountryFromCoordinates(lat, lon);
                 })
                 .then(userCountry => {
                     return fetchCountryList().then(countryList => {
-                        populateDropdown(countryList, userCountry); // Populate dropdown with country list
+                        populateDropdown(countryList, userCountry);
                     });
                 })
                 .catch(error => {
