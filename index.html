@@ -42,41 +42,59 @@
     </section>
 
     <script>
-        function getUserCountryFromIP() {
-            return fetch('https://freeipapi.com/api/json') // Fetch geolocation data
+        function getLocation() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        resolve({ lat, lon });
+                    }, function(error) {
+                        reject("Error getting location.");
+                    });
+                } else {
+                    reject("Geolocation is not supported by this browser.");
+                }
+            });
+        }
+
+        function getCountryFromCoordinates(lat, lon) {
+            const apiKey = "AIzaSyAZchyp1HWHvwH_1xIDHvNrRtElZs8Dwbk";
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${apiKey}`;
+
+            return fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    const country = data.countryName; // Get country name
-                    console.log("User's country based on IP: " + country);
-                    return country; // Return country to the next chain
-                })
-                .catch(error => {
-                    console.error("Error fetching IP geolocation data: ", error);
-                    return null; // Handle failure gracefully
+                    if (data.results && data.results[0]) {
+                        for (let component of data.results[0].address_components) {
+                            if (component.types.includes("country")) {
+                                return component.long_name;
+                            }
+                        }
+                        throw new Error("Country not found");
+                    } else {
+                        throw new Error("No results found for coordinates");
+                    }
                 });
         }
 
         function fetchCountryList() {
-            return fetch('https://raw.githubusercontent.com/Haqimzuhari/nosavewhatsapp/refs/heads/master/countries.json') // Path to your JSON file
+            return fetch('https://raw.githubusercontent.com/Haqimzuhari/nosavewhatsapp/refs/heads/master/countries.json')
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Country list fetched from JSON");
-                    return data; // Return the list of countries
+                    return data;
+                    throw new Error("Unable to fetch countries list");
                 })
-                .catch(error => {
-                    console.error("Error fetching country list: ", error)
-                    return []; // Return an empty array on failure
-                });
         }
 
         function populateDropdown(countries, userCountry) {
             const dropdown = document.getElementById("country");
-
-            // Populate the dropdown
+            console.log(userCountry)
+            
             countries.forEach(country => {
                 const option = document.createElement("option");
-                option.value = country.dial_code; // Assuming JSON has a 'code' field
-                option.text = `${country.name} (${country.dial_code})`; // Assuming JSON has a 'name' field
+                option.value = country.dial_code;
+                option.text = `${country.name} (${country.dial_code})`;
                 if (userCountry == country.name) {
                     option.selected = true
                 }
@@ -93,30 +111,23 @@
 
             for (let i = 0; i < countryCodeDropdown.options.length; i++) {
                 const option = countryCodeDropdown.options[i];
-                countryCodes.push(option.value.replace(/[^0-9]/g, "")); // Extract the value (country code)
+                countryCodes.push(option.value.replace(/[^0-9]/g, ""));
             }
-
-            // Sanitize the phone number (remove non-numeric characters)
+            
             let sanitizedNumber = phoneInput.replace(/[^0-9]/g, "");
-
-            // Detect and remove any existing country code from the phone number
+            
             for (const code of countryCodes) {
                 if (sanitizedNumber.startsWith(code)) {
                     sanitizedNumber = sanitizedNumber.substring(code.length);
-                    break; // Stop once a match is found
+                    break;
                 }
             }
-
-            // Remove non-numeric characters from the selected country code
+            
             selectedCountryCode = selectedCountryCode.replace(/[^0-9]/g, "");
-
-            // Combine selected country code with the raw number
+            
             const fullNumber = `${selectedCountryCode}${sanitizedNumber}`;
-
-            // Generate WhatsApp link
             const whatsappLink = `https://wa.me/${fullNumber}`;
-
-            // Display the result
+            
             resultElement.innerHTML = `
                 <hr class="mb-10">
                 <div class="flex flex-col space-y-2">
@@ -145,27 +156,22 @@
             });
         }
 
-        async function init() {
-            const axios = require('axios');
-            const url = `https://freeipapi.com/api/json/`; // to get current request's ip info
-
-            axios.get(url)
-                .then(response => {
-                    const data = response.data;
-                    console.log(data);
+        function init() {
+            getLocation()
+                .then(({ lat, lon }) => {
+                    return getCountryFromCoordinates(lat, lon); // Fetch the country
+                })
+                .then(userCountry => {
+                    return fetchCountryList().then(countryList => {
+                        populateDropdown(countryList, userCountry); // Populate dropdown with country list
+                    });
                 })
                 .catch(error => {
                     console.error(error);
                 });
-
-            //const userCountry = await getUserCountryFromIP(); // Step 1: Get user's country
-            //const countryList = await fetchCountryList(); // Step 2: Fetch country list
-            //populateDropdown(countryList, userCountry); // Step 3: Populate and auto-select
         }
 
-        window.onload = function() {
-            init();
-        };   
+        window.onload = init;
     </script>
 </body>
 </html>
