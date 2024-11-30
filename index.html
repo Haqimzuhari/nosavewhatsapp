@@ -84,17 +84,28 @@
                 .then(data => data);
         }
 
-        function populateDropdown(countries, userCountry) {
+        //function populateDropdown(countries, userCountry) {
+        //    const dropdown = document.getElementById("country");
+        //    console.log(userCountry)
+        //    
+        //    countries.forEach(country => {
+        //        const option = document.createElement("option");
+        //        option.value = country.dial_code;
+        //        option.text = `${country.name} (${country.dial_code})`;
+        //        if (userCountry == country.name) {
+        //            option.selected = true
+        //        }
+        //        dropdown.add(option);
+        //    });
+        //}
+
+        function populateDropdown(countries) {
             const dropdown = document.getElementById("country");
-            console.log(userCountry)
             
             countries.forEach(country => {
                 const option = document.createElement("option");
                 option.value = country.dial_code;
                 option.text = `${country.name} (${country.dial_code})`;
-                if (userCountry == country.name) {
-                    option.selected = true
-                }
                 dropdown.add(option);
             });
         }
@@ -153,19 +164,28 @@
             });
         }
 
+        //function init() {
+        //    getLocation()
+        //        .then(({ lat, lon }) => {
+        //            return getCountryFromCoordinates(lat, lon);
+        //        })
+        //        .then(userCountry => {
+        //            return fetchCountryList().then(countryList => {
+        //                populateDropdown(countryList, userCountry);
+        //            });
+        //        })
+        //        .catch(error => {
+        //            console.error(error);
+        //        });
+        //}
+
         function init() {
-            getLocation()
-                .then(({ lat, lon }) => {
-                    return getCountryFromCoordinates(lat, lon);
-                })
-                .then(userCountry => {
-                    return fetchCountryList().then(countryList => {
-                        populateDropdown(countryList, userCountry);
-                    });
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+            fetchCountryList().then(countryList => {
+                populateDropdown(countryList)
+            })
+            .catch(error => {
+                console.error(error);
+            });
         }
 
         window.onload = init;
